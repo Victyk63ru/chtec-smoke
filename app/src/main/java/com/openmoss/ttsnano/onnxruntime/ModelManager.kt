@@ -27,7 +27,9 @@ object ModelManager {
         Asset(HF_TTS, "moss_tts_local_shared.data", 200_000_000, "bae7782032c0fb12490ab42afe009f87ae6c75a0f0596fc7b5c08e4d5ee93916"),
         Asset(HF_CODEC, "codec_browser_onnx_meta.json", 100),
         Asset(HF_CODEC, "moss_audio_tokenizer_decode_full.onnx", 100_000, "0fbbafe3fd4afa2a019af5c5ced204af6e2d1db044fa40f021525d2aee95b4ac"),
-        Asset(HF_CODEC, "moss_audio_tokenizer_decode_shared.data", 40_000_000, "e69d52e0f4e84ca27850557ee54face46632d3a5a16c89bd246c7c408466dcad")
+        Asset(HF_CODEC, "moss_audio_tokenizer_decode_shared.data", 40_000_000, "e69d52e0f4e84ca27850557ee54face46632d3a5a16c89bd246c7c408466dcad"),
+        Asset(HF_CODEC, "moss_audio_tokenizer_encode.onnx", 100_000),
+        Asset(HF_CODEC, "moss_audio_tokenizer_encode.data", 40_000_000, "aa751265b2bab2887eac224484546b194875aa7494b607115439b3dc6b228a2c")
     )
 
     fun ensureModels(root: File, progress: (String) -> Unit) {
@@ -44,7 +46,9 @@ object ModelManager {
             "moss_tts_local_shared.data" to 230_000_000L,
             "codec_browser_onnx_meta.json" to 17_000L,
             "moss_audio_tokenizer_decode_full.onnx" to 682_000L,
-            "moss_audio_tokenizer_decode_shared.data" to 44_200_000L
+            "moss_audio_tokenizer_decode_shared.data" to 44_200_000L,
+            "moss_audio_tokenizer_encode.onnx" to 400_000L,
+            "moss_audio_tokenizer_encode.data" to 44_500_000L
         )
         val missingEstimate = assets.sumOf { asset ->
             val target = destination(root, asset)

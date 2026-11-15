@@ -2,7 +2,7 @@ name: Chtec MOSS Android smoke APK
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, voice-clone-smoke ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,6 +30,9 @@ jobs:
         run: python3 scripts/verify_project.py
       - name: Fetch pinned upstream Kotlin sources
         run: bash scripts/fetch_upstream.sh
+      - name: Patch pinned upstream for user voice tokens
+        if: github.ref_name == 'voice-clone-smoke'
+        run: python3 scripts/patch_voice.py
       - name: Build debug APK
         run: gradle :app:assembleDebug --no-daemon --stacktrace
       - name: Upload APK
