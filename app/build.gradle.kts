@@ -6,7 +6,7 @@ android {
     namespace = "com.openmoss.ttsnano.onnxruntime"
     compileSdk = 35
     defaultConfig {
-        applicationId = "com.openmoss.ttsnano.onnxruntime"
+        applicationId = "com.openmoss.ttsnano.voiceclonetest"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
