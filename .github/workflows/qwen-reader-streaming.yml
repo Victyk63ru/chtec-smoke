@@ -1,0 +1,68 @@
+name: Chtec Qwen streaming V02
+on:
+  workflow_dispatch:
+  push:
+    branches: [ qwen-reader-streaming-v02 ]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: integration
+      - uses: actions/checkout@v4
+        with:
+          repository: Danmoreng/qwen3-tts-android
+          ref: 35738304b31c425cc08fb5405372fedfd6531b3b
+          submodules: recursive
+          path: integration/upstream
+      - name: Check pinned native source
+        working-directory: integration/upstream
+        run: |
+          test "$(git rev-parse HEAD)" = "35738304b31c425cc08fb5405372fedfd6531b3b"
+          git submodule status --recursive
+          grep -q "nativeSynthesizeStreaming" external/qwen3-tts.cpp/src/qwen3_tts_jni.cpp
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK and native toolchain
+        shell: bash
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager -print -quit)"
+          test -n "$SDKMANAGER"
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Apply tested narrow patches
+        working-directory: integration
+        run: |
+          python3 scripts/qwen_apply_reader.py
+          python3 scripts/qwen_apply_diagnostics.py
+          python3 scripts/qwen_apply_streaming.py
+          python3 -m py_compile scripts/qwen_apply_streaming.py
+      - name: Unit tests (chunking and checkpointed WAV)
+        working-directory: integration/upstream
+        run: bash ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace
+      - name: Build APK
+        working-directory: integration/upstream
+        run: bash ./gradlew :app:assembleDebug --no-daemon --stacktrace
+      - name: Validate APK and JNI symbol
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          cp integration/upstream/app/build/outputs/apk/debug/app-debug.apk artifacts/Chtec_Qwen_Streaming_v02.apk
+          unzip -t artifacts/Chtec_Qwen_Streaming_v02.apk | tail -1
+          unzip -p artifacts/Chtec_Qwen_Streaming_v02.apk lib/arm64-v8a/libqwen3_tts_jni.so > /tmp/libqwen_jni.so
+          grep -a -q 'Java_com_qwen_tts_studio_engine_QwenEngine_nativeSynthesizeStreaming' /tmp/libqwen_jni.so
+          sha256sum artifacts/Chtec_Qwen_Streaming_v02.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Chtec_Qwen_Streaming_v02
+          path: artifacts/*.apk
+          retention-days: 14
+          if-no-files-found: error
