@@ -414,4 +414,12 @@ assert g.count('applicationId = "com.yagel.chtec.qwenreader.diag"') == 1
 g=g.replace('applicationId = "com.yagel.chtec.qwenreader.diag"',
             'applicationId = "com.yagel.chtec.qwenreader.stream"')
 gradle.write_text(g,encoding="utf8")
-print("STREAM_PATCH_OK: JNI streaming, cancel, checkpointed WAV, partial recovery, native core unchanged")
+# Distinct launcher label and version so the test app cannot be confused with older installed builds.
+strings_path = root/"app/src/main/res/values/strings.xml"
+label = strings_path.read_text(encoding="utf8")
+assert label.count("Чтец — Qwen (тест)") == 1
+strings_path.write_text(label.replace("Чтец — Qwen (тест)", "Чтец — потоковый 0.2"), encoding="utf8")
+g = gradle.read_text(encoding="utf8")
+assert g.count('versionName = "0.1.0-chtec-test"') == 1
+gradle.write_text(g.replace('versionName = "0.1.0-chtec-test"', 'versionName = "0.2.0-streaming"'), encoding="utf8")
+print("STREAM_PATCH_OK: JNI streaming, cancel, checkpointed WAV, partial recovery, distinct app name")
