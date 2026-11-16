@@ -65,9 +65,6 @@ once('    fun synthesize() {\n        val text = _uiState.value.text.trim()\n',
 once('                    generatedAudio = nativeResult.audio\n',
      '                    ChtecDiagnostics.record("STUDIO_OK", "duration_ms=" + nativeResult.timeMs + " samples=" + nativeResult.audio.size)\n'
      '                    generatedAudio = nativeResult.audio\n')
-once('                            status = "Synthesis failed",\n                            error = nativeResult.errorMsg ?: "Native synthesis failed",\n',
-     '                            status = "Synthesis failed",\n                            error = nativeResult.errorMsg ?: "Native synthesis failed",\n')
-# The above replacement is intentionally a no-op: error-log insertion below uses an unambiguous anchor.
 once('                    if (!nativeResult.success || nativeResult.audio == null) {\n',
      '                    if (!nativeResult.success || nativeResult.audio == null) {\n'
      '                        ChtecDiagnostics.record("STUDIO_ERROR", nativeResult.errorMsg ?: "Native synthesis failed")\n')
