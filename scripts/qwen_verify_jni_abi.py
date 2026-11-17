@@ -22,7 +22,6 @@ assert native_types==expected_cpp,f"Native ABI mismatch: {native_types!r}"
 method=re.search(r"private external fun nativeSynthesizeStreaming\s*\((.*?)\)\s*:\s*NativeResult\?",kt,re.S)
 assert method,"native Kotlin method missing"
 kotlin_args=re.findall(r"(\w+):\s*(\w+\??)",method.group(1))
-                  )
 assert kotlin_args==[
  ('ptr','Long'),('text','String'),('referenceWav','String?'),
  ('speakerEmbeddingPath','String?'),('params','NativeParams'),

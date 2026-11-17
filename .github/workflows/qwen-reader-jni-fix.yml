@@ -44,6 +44,7 @@ jobs:
           python3 scripts/qwen_apply_diagnostics.py
           python3 scripts/qwen_apply_streaming.py
           python3 scripts/qwen_apply_jni_fix.py
+          python3 -m py_compile scripts/qwen_verify_jni_abi.py
           python3 scripts/qwen_verify_jni_abi.py
       - name: Unit tests (chunking, checkpointed WAV)
         working-directory: integration/upstream
